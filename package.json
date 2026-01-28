@@ -6,20 +6,24 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-names": "node --experimental-strip-types tools/generate-names.mts"
+  },
+  "dependencies": {
+    "butterchurn": "3.0.0-beta.5",
+    "butterchurn-presets": "3.0.0-beta.4"
   },
   "devDependencies": {
+    "@types/node": "^25.1.0",
     "@zhoumutou/vite-plugin-inline": "^0.4.2",
     "typescript": "~5.9.3",
-    "vite": "npm:rolldown-vite@7.2.5"
+    "vite": "npm:rolldown-vite@7.2.5",
+    "vite-plugin-inline-source": "^4.1.0"
   },
   "pnpm": {
     "overrides": {
       "vite": "npm:rolldown-vite@7.2.5"
     }
   },
-  "dependencies": {
-    "butterchurn": "3.0.0-beta.5",
-    "butterchurn-presets": "3.0.0-beta.4"
-  }
+  "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264"
 }
