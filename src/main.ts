@@ -9,6 +9,22 @@ import {
 } from "@/utils/presets";
 import { createSignalRGBAnalyser } from "@/utils/createSignalRGBAnalyser";
 
+if (import.meta.env.DEV) {
+  window.Preset = "# Random";
+  window.RandomSeconds = 5;
+  window.BlendSeconds = 1;
+  window.PauseMode = "None";
+
+  // @ts-expect-error
+  window.engine = {
+    audio: {
+      level: -50,
+      density: 0,
+      freq: [],
+    },
+  };
+}
+
 // Constants
 const RANDOM_PREST_NAME = "# Random";
 
@@ -104,3 +120,9 @@ const update = () => {
   window.requestAnimationFrame(update);
 };
 update();
+
+if (import.meta.env.DEV) {
+  window.onPresetChanged();
+  window.onRandomSecondsChanged();
+  window.onBlendSecondsChanged();
+}
