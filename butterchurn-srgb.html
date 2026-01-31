@@ -4,7 +4,7 @@
   <meta publisher="ferretwithaberet" />
 
   <meta
-    property="preset"
+    property="Preset"
     label="Preset"
     type="list"
     values="# Random,Preset 1,Preset 2,Preset 3,Preset 4,Preset 5,Preset 6,Preset 7,Preset 8,Preset 9,Preset 10,Preset 11,Preset 12,Preset 13,Preset 14,Preset 15,Preset 16,Preset 17,Preset 18,Preset 19,Preset 20,Preset 21,Preset 22,Preset 23,Preset 24,Preset 25,Preset 26,Preset 27,Preset 28,Preset 29,Preset 30,Preset 31,Preset 32,Preset 33,Preset 34,Preset 35,Preset 36,Preset 37,Preset 38,Preset 39,Preset 40,Preset 41,Preset 42,Preset 43,Preset 44,Preset 45,Preset 46,Preset 47,Preset 48,Preset 49,Preset 50,Preset 51,Preset 52,Preset 53,Preset 54,Preset 55,Preset 56,Preset 57,Preset 58,Preset 59,Preset 60,Preset 61,Preset 62,Preset 63,Preset 64,Preset 65,Preset 66,Preset 67,Preset 68,Preset 69,Preset 70,Preset 71,Preset 72,Preset 73,Preset 74,Preset 75,Preset 76,Preset 77,Preset 78,Preset 79,Preset 80,Preset 81,Preset 82,Preset 83,Preset 84,Preset 85,Preset 86,Preset 87,Preset 88,Preset 89,Preset 90,Preset 91,Preset 92,Preset 93,Preset 94,Preset 95,Preset 96,Preset 97,Preset 98,Preset 99,Preset 100,Preset 101,Preset 102,Preset 103,Preset 104,Preset 105,Preset 106,Preset 107"
@@ -12,7 +12,7 @@
   />
 
   <meta
-    property="randomSeconds"
+    property="RandomSeconds"
     label="Random change interval (seconds)"
     type="number"
     default="15"
@@ -21,7 +21,7 @@
   />
 
   <meta
-    property="blendSeconds"
+    property="BlendSeconds"
     label="Time to blend (seconds)"
     type="number"
     default="2"
@@ -29,10 +29,17 @@
     max="10"
   />
 
-  <!-- TODO: Implement these settings -->
-  <!-- <meta property="pauseMode" label="Pause mode" type="list" values="Pause canvas,Fade to color" default="Pause canvas" /> -->
-  <!-- <meta property="fadeColor" label="Fade color" type="color" default="#000000" min="0" max="360" /> -->
-  <!-- <meta property="showPresetName" label="Show preset name" type="boolean" default="0" /> -->
+  <!-- Remember to implement PauseMode "Fade to color" -->
+  <meta
+    property="PauseMode"
+    label="Pause mode"
+    type="list"
+    values="None,Pause canvas"
+    default="None"
+  />
+
+  <!-- <meta property="FadeColor" label="Fade color" type="color" default="#000000" min="0" max="360" /> -->
+  <!-- <meta property="ShowPresetName" label="Show preset name" type="boolean" default="0" /> -->
 </head>
 
 <body>

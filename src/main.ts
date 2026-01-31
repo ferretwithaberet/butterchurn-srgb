@@ -1,15 +1,21 @@
 import "@/style.css";
 
 import butterchurn from "butterchurn";
-import butterchurnPresets from "butterchurn-presets";
 
-import presetsMap from "@/presetsMap.json" with { type: "json" };
-import { trackMetaProperty } from "@/utils/meta";
-import { getRandomPresetName } from "@/utils/presets";
+import {
+  getRandomPresetName,
+  getFullPresetName,
+  getPresetByName,
+} from "@/utils/presets";
 import { createSignalRGBAnalyser } from "@/utils/createSignalRGBAnalyser";
 
+// Constants
+const RANDOM_PREST_NAME = "# Random";
+
 // Variables
-let lastPreset: string | null = null;
+const { Preset } = window;
+let lastPreset: string =
+  Preset !== RANDOM_PREST_NAME ? Preset : getRandomPresetName();
 let randomInterval: number | null = null;
 
 // Setup
@@ -30,20 +36,20 @@ const loadPreset = (preset: string, force?: boolean) => {
   if (!force && lastPreset && lastPreset === preset) return;
   lastPreset = preset;
 
-  const { blendSeconds } = window;
+  const { BlendSeconds } = window;
   const presetName = preset ?? getRandomPresetName();
-  visualizer.loadPreset(butterchurnPresets.default[presetName], blendSeconds);
+  visualizer.loadPreset(getPresetByName(presetName), BlendSeconds);
 
-  console.log("Preset changed:", preset);
+  console.log("Preset changed:", getFullPresetName(preset));
 };
 
 const setupRandomInterval = () => {
   if (randomInterval) return;
 
-  const { randomSeconds } = window;
+  const { RandomSeconds } = window;
   randomInterval = setInterval(() => {
     loadPreset(getRandomPresetName());
-  }, 1000 * randomSeconds);
+  }, 1000 * RandomSeconds);
 };
 
 const cleanupRandomInterval = () => {
@@ -53,41 +59,48 @@ const cleanupRandomInterval = () => {
 };
 
 // Change handlers
-const RANDOM_VALUE = "# Random";
-const handlePresetChange = (value: string) => {
-  const preset = value !== RANDOM_VALUE ? value : null;
+window.onPresetChanged = () => {
+  const { Preset } = window;
+  const preset = Preset !== RANDOM_PREST_NAME ? Preset : null;
 
   if (!preset) {
     setupRandomInterval();
   } else {
-    const presetName = (presetsMap as any)[preset];
     cleanupRandomInterval();
-    loadPreset(presetName);
+    loadPreset(preset);
   }
 };
 
-const handleRandomSecondsChange = () => {
+window.onRandomSecondsChanged = () => {
+  const { Preset } = window;
+  if (Preset !== RANDOM_PREST_NAME) return;
+
   cleanupRandomInterval();
   setupRandomInterval();
 };
 
-const handleBlendSecondsChange = () => {
+window.onBlendSecondsChanged = () => {
   if (!lastPreset) return;
   loadPreset(lastPreset, true);
 };
 
+// Load initial preset
+loadPreset(lastPreset);
+
 // Update loop
-const update = () => {
-  trackMetaProperty("preset", handlePresetChange);
-  trackMetaProperty("randomSeconds", handleRandomSecondsChange);
-  trackMetaProperty("blendSeconds", handleBlendSecondsChange);
+const renderFrame = () => {
+  const { PauseMode } = window;
+  if (engine.audio.level === -100 && PauseMode === "Pause canvas") return;
 
   try {
-    if (engine.audio.level !== -100) visualizer.render();
+    visualizer.render();
   } catch (error) {
     console.error(error);
   }
+};
 
+const update = () => {
+  renderFrame();
   window.requestAnimationFrame(update);
 };
 update();
