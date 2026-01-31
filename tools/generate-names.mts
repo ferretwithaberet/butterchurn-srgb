@@ -110,21 +110,33 @@ const presets = [
   "Zylot - True Visionary (Final Mix)",
 ];
 
-const cleanedPresets = presets.reduce<Record<string, string>>(
-  (acc, preset, index) => {
-    acc[`Preset ${index + 1}`] = preset;
-    return acc;
-  },
-  {},
-);
+const sanitizeSRGBOption = (str: string) =>
+  str
+    .replace(/,/g, "٬")
+    .replace(/&/g, "＆")
+    .replace(/\s+/g, " ")
+    .trimStart()
+    .trimEnd();
 
-await fs.promises.writeFile(
+const cleanedPresets = presets.reduce<Record<string, string>>((acc, preset) => {
+  acc[sanitizeSRGBOption(preset)] = preset;
+  return acc;
+}, {});
+
+const mapPromise = fs.promises.writeFile(
   "./src/presetsMap.json",
   JSON.stringify(cleanedPresets),
 );
 
-// TODO: Maybe replace with regex sub in index.html file
-console.log(
-  "Meta options:",
-  ["# Random", ...Object.keys(cleanedPresets)].join(","),
+const options = ["# Random", ...Object.keys(cleanedPresets)].join(",");
+const html = await fs.promises.readFile("./butterchurn-srgb.html", {
+  encoding: "utf8",
+});
+const htmlPromise = fs.promises.writeFile(
+  "./butterchurn-srgb.html",
+  html.replace(/values="# Random,.*?"/, `values="${options}"`),
 );
+
+await Promise.all([mapPromise, htmlPromise]);
+
+console.info("Generated map file and updated html entry!");

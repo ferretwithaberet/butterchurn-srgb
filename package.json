@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "pnpm generate-names && tsc && vite build",
     "preview": "vite preview",
     "generate-names": "node --experimental-strip-types tools/generate-names.mts"
   },
