@@ -45,18 +45,20 @@ const visualizer = butterchurn.createVisualizer(audioContext, canvas, {
 
 const dummySource = audioContext.createGain();
 visualizer.connectAudio(dummySource);
-visualizer.audio.analyser = createSignalRGBAnalyser(audioContext) as any;
+visualizer.audio.analyser = createSignalRGBAnalyser(audioContext);
 
 // Methods
 const loadPreset = (preset: string, force?: boolean) => {
   if (!force && lastPreset && lastPreset === preset) return;
   lastPreset = preset;
 
-  const { BlendSeconds } = window;
+  const { BlendSeconds, ShowPresetTitle } = window;
   const presetName = preset ?? getRandomPresetName();
   visualizer.loadPreset(getPresetByName(presetName), BlendSeconds);
 
-  console.log("Preset changed:", getFullPresetName(preset));
+  const fullName = getFullPresetName(preset);
+  if (Number(ShowPresetTitle)) visualizer.launchSongTitleAnim(fullName);
+  console.info("Preset changed:", fullName);
 };
 
 const setupRandomInterval = () => {

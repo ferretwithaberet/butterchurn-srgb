@@ -114,6 +114,7 @@ const sanitizeSRGBOption = (str: string) =>
   str
     .replace(/,/g, "٬")
     .replace(/&/g, "＆")
+    .replace(/\$/g, "＄")
     .replace(/\s+/g, " ")
     .trimStart()
     .trimEnd();
