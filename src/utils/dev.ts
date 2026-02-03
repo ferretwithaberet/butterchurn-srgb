@@ -69,8 +69,8 @@ export const setupDev = (options: SetupDevOptions = {}) => {
   const { randomAudioData, overridePropertyValues } = options;
 
   setupProperties(overridePropertyValues);
-  mockAudioEngine(randomAudioData);
   queueMicrotask(triggerChangeListeners);
+  mockAudioEngine(randomAudioData);
 
   if (randomAudioData) {
     setInterval(() => mockAudioEngine(true), 500);
