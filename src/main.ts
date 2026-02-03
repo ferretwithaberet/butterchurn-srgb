@@ -51,13 +51,13 @@ const loadPreset = (preset: string, force?: boolean) => {
   console.info("Preset changed:", fullName);
 };
 
+const loadRandomPreset = () => loadPreset(getRandomPresetName());
+
 const setupRandomInterval = () => {
   if (randomInterval) return;
 
   const { RandomSeconds } = window;
-  randomInterval = setInterval(() => {
-    loadPreset(getRandomPresetName());
-  }, 1000 * RandomSeconds);
+  randomInterval = setInterval(() => loadRandomPreset(), 1000 * RandomSeconds);
 };
 
 const cleanupRandomInterval = () => {
@@ -97,7 +97,7 @@ loadPreset(lastPreset);
 
 // Update loop
 const renderFrame = () => {
-  const { engine, PauseMode, HueShift, Saturation, Contrast } = window;
+  const { engine, Preset, PauseMode, HueShift, Saturation, Contrast } = window;
 
   canvas.style.filter = [
     `hue-rotate(${HueShift}deg)`,
@@ -111,6 +111,7 @@ const renderFrame = () => {
     visualizer.render();
   } catch (error) {
     console.error(error);
+    if (Preset === RANDOM_PREST_NAME) loadRandomPreset();
   }
 };
 
