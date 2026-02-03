@@ -97,7 +97,14 @@ loadPreset(lastPreset);
 
 // Update loop
 const renderFrame = () => {
-  const { engine, PauseMode } = window;
+  const { engine, PauseMode, HueShift, Saturation, Contrast } = window;
+
+  canvas.style.filter = [
+    `hue-rotate(${HueShift}deg)`,
+    `saturate(${Saturation + 100}%)`,
+    `contrast(${Contrast + 100}%)`,
+  ].join(" ");
+
   if (engine.audio.level === -100 && PauseMode === "Pause canvas") return;
 
   try {

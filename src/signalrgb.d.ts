@@ -8,6 +8,9 @@ type SignalRGBProperties = {
   BlendSeconds: number;
   PauseMode: PauseMode;
   Amplify: number;
+  HueShift: number;
+  Saturation: number;
+  Contrast: number;
   ShowPresetTitle: SRGBBoolean;
 };
 
