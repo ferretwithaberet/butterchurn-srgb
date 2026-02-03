@@ -4,7 +4,7 @@ const clampByte = (x: number) => Math.max(0, Math.min(255, Math.floor(x)));
 export const createSignalRGBAnalyser = (_audioContext: AudioContext) => {
   const analyser = {
     getByteTimeDomainData(out: Uint8Array) {
-      const { Amplify } = window;
+      const { engine, Amplify } = window;
       const freqs = engine.audio.freq.map((freq) => Math.abs(freq));
 
       const length = Math.min(freqs.length, out.length);

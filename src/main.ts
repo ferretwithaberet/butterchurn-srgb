@@ -8,22 +8,12 @@ import {
   getPresetByName,
 } from "@/utils/presets";
 import { createSignalRGBAnalyser } from "@/utils/createSignalRGBAnalyser";
+import { setupDev } from "@/utils/dev";
 
-if (import.meta.env.DEV) {
-  window.Preset = "# Random";
-  window.RandomSeconds = 5;
-  window.BlendSeconds = 1;
-  window.PauseMode = "None";
-
-  // @ts-expect-error
-  window.engine = {
-    audio: {
-      level: -50,
-      density: 0,
-      freq: [],
-    },
-  };
-}
+if (import.meta.env.DEV)
+  setupDev({
+    randomAudioData: true,
+  });
 
 // Constants
 const RANDOM_PREST_NAME = "# Random";
@@ -107,7 +97,7 @@ loadPreset(lastPreset);
 
 // Update loop
 const renderFrame = () => {
-  const { PauseMode } = window;
+  const { engine, PauseMode } = window;
   if (engine.audio.level === -100 && PauseMode === "Pause canvas") return;
 
   try {
@@ -122,9 +112,3 @@ const update = () => {
   window.requestAnimationFrame(update);
 };
 update();
-
-if (import.meta.env.DEV) {
-  window.onPresetChanged();
-  window.onRandomSecondsChanged();
-  window.onBlendSecondsChanged();
-}

@@ -17,14 +17,15 @@ type SignalRGBChangeListeners = {
     : never]: () => void;
 };
 
-interface Window extends SignalRGBProperties, SignalRGBChangeListeners {}
-
 type Engine = {
   audio: {
     level: number;
+    rawlevel: number;
     density: number;
     freq: number[];
   };
 };
 
-const engine: Engine;
+interface Window extends SignalRGBProperties, SignalRGBChangeListeners {
+  engine: Engine;
+}
