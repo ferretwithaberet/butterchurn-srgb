@@ -5,7 +5,10 @@ export const createSignalRGBAnalyser = (_audioContext: AudioContext) => {
   const analyser = {
     getByteTimeDomainData(out: Uint8Array) {
       const { engine, Amplify } = window;
-      const freqs = engine.audio.freq.map((freq) => Math.abs(freq));
+      const normalizedLevel = (100 + engine.audio.rawlevel) / 100;
+      const freqs = engine.audio.freq.map(
+        (freq) => Math.abs(freq) * normalizedLevel,
+      );
 
       const length = Math.min(freqs.length, out.length);
       for (let i = 0; i < length; i++) {
