@@ -37,7 +37,10 @@
     default="None"
   />
 
-  <!-- <meta
+  <!--
+  Pause mode "Fade to color", canvas slowly fades to FadeColor on pause
+
+  <meta
     property="FadeColor"
     label="Fade color"
     type="color"
@@ -51,14 +54,26 @@
     label="Amplify"
     tooltip="Each frequency is multiplied with this value / 10, e.g. 1 = 0.1, 10 = 1.0, 20 = 2.0"
     type="number"
-    default="10"
+    default="5"
     min="1"
     max="20"
+  />
+
+  <meta property="RGBMode" label="RGB mode" type="boolean" default="0" />
+
+  <meta
+    property="RGBModeSpeed"
+    label="RGB mode speed"
+    type="number"
+    default="5"
+    min="1"
+    max="10"
   />
 
   <meta
     property="HueShift"
     label="Hue shift"
+    tooltip="Ignored if RGB mode is on"
     type="hue"
     default="0"
     min="0"

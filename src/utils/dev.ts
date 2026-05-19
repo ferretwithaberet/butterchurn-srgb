@@ -48,7 +48,7 @@ const triggerChangeListeners = () => {
 
 const mockAudioEngine = (random: boolean = false) => {
   const level = random ? -generateRandomInt(0, 101) : -100;
-  window.engine = {
+  (window as any).engine = {
     audio: {
       level,
       rawlevel: level,
@@ -66,7 +66,7 @@ type SetupDevOptions = {
 };
 
 export const setupDev = (options: SetupDevOptions = {}) => {
-  const { randomAudioData, overridePropertyValues } = options;
+  const { randomAudioData = true, overridePropertyValues } = options;
 
   setupProperties(overridePropertyValues);
   queueMicrotask(triggerChangeListeners);

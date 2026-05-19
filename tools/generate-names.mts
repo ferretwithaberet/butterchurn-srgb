@@ -116,8 +116,7 @@ const sanitizeSRGBOption = (str: string) =>
     .replace(/&/g, "＆")
     .replace(/\$/g, "＄")
     .replace(/\s+/g, " ")
-    .trimStart()
-    .trimEnd();
+    .trim();
 
 const cleanedPresets = presets.reduce<Record<string, string>>((acc, preset) => {
   acc[sanitizeSRGBOption(preset)] = preset;

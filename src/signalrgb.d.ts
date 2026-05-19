@@ -8,6 +8,8 @@ type SignalRGBProperties = {
   BlendSeconds: number;
   PauseMode: PauseMode;
   Amplify: number;
+  RGBMode: SRGBBoolean;
+  RGBModeSpeed: number;
   HueShift: number;
   Saturation: number;
   Contrast: number;
@@ -29,6 +31,6 @@ type Engine = {
   };
 };
 
-interface Window extends SignalRGBProperties, SignalRGBChangeListeners {
-  engine: Engine;
-}
+let engine: Engine;
+
+interface Window extends SignalRGBProperties, SignalRGBChangeListeners {}

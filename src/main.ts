@@ -7,13 +7,14 @@ import {
   getFullPresetName,
   getPresetByName,
 } from "@/utils/presets";
-import { createSignalRGBAnalyser } from "@/utils/createSignalRGBAnalyser";
+import {
+  createSignalRGBAnalyser,
+  installSignalRGBSilenceGuard,
+} from "@/utils/createSignalRGBAnalyser";
 import { setupDev } from "@/utils/dev";
+import { parseSRGBBoolean } from "./utils/srgb";
 
-if (import.meta.env.DEV)
-  setupDev({
-    randomAudioData: true,
-  });
+if (import.meta.env.DEV) setupDev();
 
 // Constants
 const RANDOM_PREST_NAME = "# Random";
@@ -25,7 +26,7 @@ let lastPreset: string =
 let randomInterval: number | null = null;
 
 // Setup
-const audioContext = new AudioContext();
+const audioContext = new AudioContext({ sampleRate: 22050 });
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 const visualizer = butterchurn.createVisualizer(audioContext, canvas, {
@@ -35,7 +36,10 @@ const visualizer = butterchurn.createVisualizer(audioContext, canvas, {
 
 const dummySource = audioContext.createGain();
 visualizer.connectAudio(dummySource);
-visualizer.audio.analyser = createSignalRGBAnalyser(audioContext);
+
+const analyser = createSignalRGBAnalyser(audioContext);
+visualizer.audio.analyser = analyser;
+installSignalRGBSilenceGuard(visualizer);
 
 // Methods
 const loadPreset = (preset: string, force?: boolean) => {
@@ -47,7 +51,8 @@ const loadPreset = (preset: string, force?: boolean) => {
   visualizer.loadPreset(getPresetByName(presetName), BlendSeconds);
 
   const fullName = getFullPresetName(preset);
-  if (Number(ShowPresetTitle)) visualizer.launchSongTitleAnim(fullName);
+  if (parseSRGBBoolean(ShowPresetTitle))
+    visualizer.launchSongTitleAnim(fullName);
   console.info("Preset changed:", fullName);
 };
 
@@ -97,13 +102,27 @@ loadPreset(lastPreset);
 
 // Update loop
 const renderFrame = () => {
-  const { engine, Preset, PauseMode, HueShift, Saturation, Contrast } = window;
+  const {
+    Preset,
+    PauseMode,
+    HueShift,
+    Saturation,
+    Contrast,
+    RGBMode,
+    RGBModeSpeed,
+  } = window;
 
-  canvas.style.filter = [
-    `hue-rotate(${HueShift}deg)`,
+  canvas.classList.toggle("rgb-mode", parseSRGBBoolean(RGBMode));
+
+  const filters = [
     `saturate(${Saturation + 100}%)`,
     `contrast(${Contrast + 100}%)`,
-  ].join(" ");
+  ];
+  if (!RGBMode) filters.push(`hue-rotate(${HueShift}deg)`);
+
+  canvas.style.filter = filters.join(" ");
+  canvas.style.animationDuration = `${5.5 - (RGBModeSpeed / 10) * 5}s`;
+  console.log("SPEED", canvas.style.animationDuration);
 
   if (engine.audio.level === -100 && PauseMode === "Pause canvas") return;
 
