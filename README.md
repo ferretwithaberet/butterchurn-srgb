@@ -4,6 +4,10 @@ Music visualizer effect for [SignalRGB](https://signalrgb.com/) using [Butterchu
 
 <img height="400" alt="image" src="https://github.com/user-attachments/assets/e1688e1d-79e9-412b-9d09-ce0d23bce243" />
 
+## Built bundle files
+
+Built bundle files can be found on the SignalRGB discord, in [this thread](https://discord.com/channels/803347488190365737/1466540194126888980). In the future the project might use github releases to publish those files.
+
 ## Building
 
 ### Prerequisites
