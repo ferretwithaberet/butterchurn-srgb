@@ -1,33 +1,28 @@
-import "@/style.css";
+import '@/style.css';
 
-import butterchurn from "butterchurn";
+import butterchurn from 'butterchurn';
 
-import {
-  getRandomPresetName,
-  getFullPresetName,
-  getPresetByName,
-} from "@/utils/presets";
+import { getRandomPresetName, getFullPresetName, getPresetByName } from '@/utils/presets';
 import {
   createSignalRGBAnalyser,
   installSignalRGBSilenceGuard,
-} from "@/utils/createSignalRGBAnalyser";
-import { setupDev } from "@/utils/dev";
-import { parseSRGBBoolean } from "./utils/srgb";
+} from '@/utils/createSignalRGBAnalyser';
+import { setupDev } from '@/utils/dev';
+import { parseSRGBBoolean } from './utils/srgb';
 
 if (import.meta.env.DEV) setupDev();
 
 // Constants
-const RANDOM_PREST_NAME = "# Random";
+const RANDOM_PREST_NAME = '# Random';
 
 // Variables
 const { Preset } = window;
-let lastPreset: string =
-  Preset !== RANDOM_PREST_NAME ? Preset : getRandomPresetName();
+let lastPreset: string = Preset !== RANDOM_PREST_NAME ? Preset : getRandomPresetName();
 let randomInterval: number | null = null;
 
 // Setup
 const audioContext = new AudioContext({ sampleRate: 22050 });
-const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 const visualizer = butterchurn.createVisualizer(audioContext, canvas, {
   width: 320,
@@ -51,9 +46,8 @@ const loadPreset = (preset: string, force?: boolean) => {
   visualizer.loadPreset(getPresetByName(presetName), BlendSeconds);
 
   const fullName = getFullPresetName(preset);
-  if (parseSRGBBoolean(ShowPresetTitle))
-    visualizer.launchSongTitleAnim(fullName);
-  console.info("Preset changed:", fullName);
+  if (parseSRGBBoolean(ShowPresetTitle)) visualizer.launchSongTitleAnim(fullName);
+  console.info('Preset changed:', fullName);
 };
 
 const loadRandomPreset = () => loadPreset(getRandomPresetName());
@@ -73,6 +67,7 @@ const cleanupRandomInterval = () => {
 
 // Change handlers
 window.onPresetChanged = () => {
+  // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest value from window; same identifier intentional
   const { Preset } = window;
   const preset = Preset !== RANDOM_PREST_NAME ? Preset : null;
 
@@ -85,6 +80,7 @@ window.onPresetChanged = () => {
 };
 
 window.onRandomSecondsChanged = () => {
+  // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest value from window; same identifier intentional
   const { Preset } = window;
   if (Preset !== RANDOM_PREST_NAME) return;
 
@@ -102,29 +98,17 @@ loadPreset(lastPreset);
 
 // Update loop
 const renderFrame = () => {
-  const {
-    Preset,
-    PauseMode,
-    HueShift,
-    Saturation,
-    Contrast,
-    RGBMode,
-    RGBModeSpeed,
-  } = window;
+  // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest values from window each frame; same identifiers intentional
+  const { Preset, PauseMode, HueShift, Saturation, Contrast, RGBMode, RGBModeSpeed } = window;
 
-  canvas.classList.toggle("rgb-mode", parseSRGBBoolean(RGBMode));
-
-  const filters = [
-    `saturate(${Saturation + 100}%)`,
-    `contrast(${Contrast + 100}%)`,
-  ];
-  if (!RGBMode) filters.push(`hue-rotate(${HueShift}deg)`);
-
-  canvas.style.filter = filters.join(" ");
+  canvas.classList.toggle('rgb-mode', parseSRGBBoolean(RGBMode));
   canvas.style.animationDuration = `${5.5 - (RGBModeSpeed / 10) * 5}s`;
-  console.log("SPEED", canvas.style.animationDuration);
 
-  if (engine.audio.level === -100 && PauseMode === "Pause canvas") return;
+  canvas.style.setProperty('--hue-shift', `${HueShift}deg`);
+  canvas.style.setProperty('--saturate', `${Saturation + 100}%`);
+  canvas.style.setProperty('--contrast', `${Contrast + 100}%`);
+
+  if (engine.audio.level === -100 && PauseMode === 'Pause canvas') return;
 
   try {
     visualizer.render();

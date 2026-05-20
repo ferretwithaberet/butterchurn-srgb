@@ -1,6 +1,6 @@
-type SRGBBoolean = "0" | "1";
+type SRGBBoolean = '0' | '1';
 
-type PauseMode = "None" | "Pause canvas";
+type PauseMode = 'None' | 'Pause canvas';
 
 type SignalRGBProperties = {
   Preset: string;
@@ -17,9 +17,7 @@ type SignalRGBProperties = {
 };
 
 type SignalRGBChangeListeners = {
-  [K in keyof SignalRGBProperties as K extends string
-    ? `on${K}Changed`
-    : never]: () => void;
+  [K in keyof SignalRGBProperties as K extends string ? `on${K}Changed` : never]: () => void;
 };
 
 type Engine = {
@@ -33,4 +31,5 @@ type Engine = {
 
 let engine: Engine;
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- interface required for declaration merging with lib.dom Window
 interface Window extends SignalRGBProperties, SignalRGBChangeListeners {}

@@ -1,9 +1,15 @@
+@property --hue {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @keyframes RGBMode {
   from {
-    filter: hue-rotate(0deg);
+    --hue: 0deg;
   }
   to {
-    filter: hue-rotate(360deg);
+    --hue: 360deg;
   }
 }
 
@@ -16,6 +22,13 @@ body {
 #canvas {
   width: 320px;
   height: 200px;
+  filter: saturate(var(--saturate, 100%)) contrast(var(--contrast, 100%))
+    hue-rotate(var(--hue-shift, 0deg));
+}
+
+#canvas.rgb-mode {
+  filter: saturate(var(--saturate, 100%)) contrast(var(--contrast, 100%))
+    hue-rotate(var(--hue, 0deg));
 }
 
 .rgb-mode {

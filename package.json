@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "pnpm generate-names && tsc && vite build",
     "preview": "vite preview",
-    "generate-names": "node --experimental-strip-types tools/generate-names.mts"
+    "generate-names": "node --experimental-strip-types tools/generate-names.mts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write ."
   },
   "dependencies": {
     "als-fft": "^3.4.1",
@@ -15,16 +19,17 @@
     "butterchurn-presets": "3.0.0-beta.4"
   },
   "devDependencies": {
-    "@types/node": "^25.9.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.1",
     "@zhoumutou/vite-plugin-inline": "^0.4.2",
+    "eslint": "^9.39.4",
+    "eslint-config-airbnb-extended": "^3.1.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
     "typescript": "~6.0.3",
-    "vite": "npm:rolldown-vite@7.2.5",
+    "vite": "8.0.13",
     "vite-plugin-inline-source": "^5.0.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "vite": "npm:rolldown-vite@7.2.5"
-    }
   },
   "packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800"
 }

@@ -1,1 +1,1 @@
-declare module "als-fft";
+declare module 'als-fft';

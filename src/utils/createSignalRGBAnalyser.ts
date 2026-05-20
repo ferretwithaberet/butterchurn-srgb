@@ -1,4 +1,4 @@
-import FFT from "als-fft";
+import FFT from 'als-fft';
 
 type ComplexPair = [number, number];
 
@@ -7,11 +7,13 @@ type AudioLevelsLike = {
   val: Float32Array;
   att: Float32Array;
 };
-type VisualizerLike = { renderer: { audioLevels: AudioLevelsLike } };
+type VisualizerLike = {
+  renderer: { audioLevels: AudioLevelsLike };
+};
 
-const clampByte = (v: number): number => (v < 0 ? 0 : v > 255 ? 255 : v);
-const clamp01 = (v: number): number => (v < -1 ? -1 : v > 1 ? 1 : v);
-const isPow2 = (n: number): boolean => n > 0 && (n & (n - 1)) === 0;
+const clampByte = (v: number): number => Math.min(255, Math.max(0, v));
+const clamp01 = (v: number): number => Math.min(1, Math.max(-1, v));
+const isPow2 = (n: number): boolean => n > 0 && Number.isInteger(Math.log2(n));
 
 // Spectrum-sum threshold below which we treat a frame as silent. SignalRGB
 // often leaks a low noise floor (frames like 1,1,2,4,6,19,... with no actual
@@ -31,11 +33,11 @@ const isSilent = (): boolean => {
   if (!audio) return true;
   if (audio.level <= -100) return true;
 
-  const freq = audio.freq;
+  const { freq } = audio;
   if (!freq || freq.length === 0) return true;
 
   let sum = 0;
-  for (let i = 0; i < freq.length; i++) {
+  for (let i = 0; i < freq.length; i += 1) {
     const v = freq[i];
     if (v > 0) sum += v;
     if (sum >= SILENCE_SUM_THRESHOLD) return false;
@@ -58,23 +60,16 @@ const isSilent = (): boolean => {
  * shape > 1 shrinks small bins toward 0, lowering the time-domain peak,
  * which avoids clipping and feels calmer.
  */
-function magsToTimeDomainIFFT(
-  mags: ArrayLike<number>,
-  N: number,
-  shape: number,
-): Float32Array {
+function magsToTimeDomainIFFT(mags: ArrayLike<number>, N: number, shape: number): Float32Array {
   if (!isPow2(N)) throw new Error(`N must be a power of two, got ${N}`);
-  const half = N >> 1;
+  const half = N / 2;
   const numBins = half - 1;
   const srcLen = mags.length;
 
   const spectrum: ComplexPair[] = Array.from({ length: N }, () => [0, 0]);
 
-  for (let k = 1; k < half; k++) {
-    const srcIdx = Math.min(
-      srcLen - 1,
-      Math.floor(((k - 1) * srcLen) / numBins),
-    );
+  for (let k = 1; k < half; k += 1) {
+    const srcIdx = Math.min(srcLen - 1, Math.floor(((k - 1) * srcLen) / numBins));
     const m0 = clampByte(Number(mags[srcIdx] ?? 0)) / 255;
     if (m0 === 0) continue;
 
@@ -97,7 +92,7 @@ function magsToTimeDomainIFFT(
   const scale = N / (2 * Math.sqrt(2 * numBins * Math.log(N)));
 
   const out = new Float32Array(N);
-  for (let i = 0; i < N; i++) {
+  for (let i = 0; i < N; i += 1) {
     out[i] = Number(recovered[i] ?? 0) * scale;
   }
   return out;
@@ -110,9 +105,7 @@ function magsToTimeDomainIFFT(
  * animating. Wrap updateAudioLevels so the original runs first, then zero
  * val/att for any frame our silence check holds.
  */
-export const installSignalRGBSilenceGuard = (
-  visualizer: VisualizerLike,
-): void => {
+export const installSignalRGBSilenceGuard = (visualizer: VisualizerLike): void => {
   const { audioLevels } = visualizer.renderer;
   const origUpdate = audioLevels.updateAudioLevels.bind(audioLevels);
   audioLevels.updateAudioLevels = (fps: number, frame: number) => {
@@ -126,7 +119,7 @@ export const installSignalRGBSilenceGuard = (
 
 export const createSignalRGBAnalyser = (
   _audioContext: AudioContext,
-): Pick<AnalyserNode, "getByteTimeDomainData"> => {
+): Pick<AnalyserNode, 'getByteTimeDomainData'> => {
   const fakeAnalyser = {
     getByteTimeDomainData(out: Uint8Array) {
       // butterchurn subtracts 128 from each byte before its FFT,
@@ -137,17 +130,14 @@ export const createSignalRGBAnalyser = (
       }
 
       const { Amplify } = window;
-      const timeDomain = magsToTimeDomainIFFT(
-        engine.audio.freq,
-        out.length,
-        10 / Amplify,
-      );
+      const timeDomain = magsToTimeDomainIFFT(engine.audio.freq, out.length, 10 / Amplify);
 
-      for (let i = 0; i < out.length; i++) {
+      for (let i = 0; i < out.length; i += 1) {
+        // eslint-disable-next-line no-param-reassign -- writing into caller's Uint8Array is the function's contract (AnalyserNode.getByteTimeDomainData)
         out[i] = Math.round(128 + 127 * clamp01(timeDomain[i]));
       }
     },
   };
 
-  return fakeAnalyser as unknown as AnalyserNode;
+  return fakeAnalyser;
 };

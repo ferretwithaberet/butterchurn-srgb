@@ -1,6 +1,6 @@
-import butterchurnPresets from "butterchurn-presets";
+import butterchurnPresets from 'butterchurn-presets';
 
-import presetsMap from "@/presetsMap.json" with { type: "json" };
+import presetsMap from '@/presetsMap.json' with { type: 'json' };
 
 export const getRandomPresetName = () => {
   const presetNames = Object.keys(presetsMap);
@@ -9,8 +9,7 @@ export const getRandomPresetName = () => {
   return presetNames[randomIndex];
 };
 
-export const getFullPresetName = (name: string) =>
-  (presetsMap as any)[name] as string;
+export const getFullPresetName = (name: string) => (presetsMap as any)[name] as string;
 
 export const getPresetByName = (name: string) => {
   const fullPresetName = getFullPresetName(name);
