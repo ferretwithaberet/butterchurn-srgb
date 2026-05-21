@@ -12,5 +12,5 @@ export const getFullPresetName = (name: string) => (presetsMap as any)[name] as 
 
 export const getPresetByName = (name: string) => {
   const fullPresetName = getFullPresetName(name);
-  return presets.default[fullPresetName];
+  return presets[fullPresetName];
 };
