@@ -6,6 +6,7 @@ import { getRandomPresetName, getFullPresetName, getPresetByName } from '@/utils
 import {
   createSignalRGBAnalyser,
   installSignalRGBSilenceGuard,
+  isSilent,
 } from '@/utils/createSignalRGBAnalyser';
 import { setupDev } from '@/utils/dev';
 import { parseSRGBBoolean } from './utils/srgb';
@@ -22,6 +23,7 @@ let randomInterval: number | null = null;
 
 // Setup
 const audioContext = new AudioContext({ sampleRate: 22050 });
+const wrapper = document.getElementById('wrapper') as HTMLDivElement;
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 const visualizer = butterchurn.createVisualizer(audioContext, canvas, {
@@ -98,17 +100,36 @@ loadPreset(lastPreset);
 
 // Update loop
 const renderFrame = () => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest values from window each frame; same identifiers intentional
-  const { Preset, PauseMode, HueShift, Saturation, Contrast, RGBMode, RGBModeSpeed } = window;
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest values from window each frame; same identifiers intentional
+    Preset,
+    PauseMode,
+    HueShift,
+    Saturation,
+    Contrast,
+    RGBModeEnabled,
+    RGBModeSpeed,
+    BlendMode,
+    BlendColor,
+  } = window;
 
-  canvas.classList.toggle('rgb-mode', parseSRGBBoolean(RGBMode));
-  canvas.style.animationDuration = `${5.5 - (RGBModeSpeed / 10) * 5}s`;
+  // RGB mode
+  wrapper.classList.toggle('rgb-mode', parseSRGBBoolean(RGBModeEnabled));
+  wrapper.style.animationDuration = `${5.5 - (RGBModeSpeed / 10) * 5}s`;
 
-  canvas.style.setProperty('--hue-shift', `${HueShift}deg`);
-  canvas.style.setProperty('--saturate', `${Saturation + 100}%`);
-  canvas.style.setProperty('--contrast', `${Contrast + 100}%`);
+  // Color blending
+  // TODO: Support blending using image mask
+  const blendModeEnabled = BlendMode !== 'None';
+  wrapper.classList.toggle('enable-blend-mode', blendModeEnabled);
+  wrapper.style.setProperty('--blend-mode', blendModeEnabled ? BlendMode : 'unset');
+  wrapper.style.setProperty('--blend-color', BlendColor);
 
-  if (engine.audio.level === -100 && PauseMode === 'Pause canvas') return;
+  // Filters
+  wrapper.style.setProperty('--hue-shift', `${HueShift}deg`);
+  wrapper.style.setProperty('--saturate', `${Saturation + 100}%`);
+  wrapper.style.setProperty('--contrast', `${Contrast + 100}%`);
+
+  if (isSilent() && PauseMode === 'Pause canvas') return;
 
   try {
     visualizer.render();

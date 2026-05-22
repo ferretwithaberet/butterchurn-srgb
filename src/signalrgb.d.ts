@@ -2,14 +2,37 @@ type SRGBBoolean = '0' | '1';
 
 type PauseMode = 'None' | 'Pause canvas';
 
+type BlendMode =
+  | 'None'
+  | 'normal'
+  | 'multiply'
+  | 'screen'
+  | 'overlay'
+  | 'darken'
+  | 'lighten'
+  | 'color-dodge'
+  | 'color-burn'
+  | 'hard-light'
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion'
+  | 'hue'
+  | 'saturation'
+  | 'color'
+  | 'luminosity'
+  | 'plus-darker'
+  | 'plus-lighter';
+
 type SignalRGBProperties = {
   Preset: string;
   RandomSeconds: number;
   BlendSeconds: number;
   PauseMode: PauseMode;
   Amplify: number;
-  RGBMode: SRGBBoolean;
+  RGBModeEnabled: SRGBBoolean;
   RGBModeSpeed: number;
+  BlendMode: BlendMode;
+  BlendColor: string;
   HueShift: number;
   Saturation: number;
   Contrast: number;

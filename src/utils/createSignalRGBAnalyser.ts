@@ -28,7 +28,7 @@ const SILENCE_SUM_THRESHOLD = 50;
  * additionally treat a near-zero total spectrum energy as silent. INT32_MIN
  * garbage in `.freq` is negative and therefore ignored by the sum.
  */
-const isSilent = (): boolean => {
+export const isSilent = (): boolean => {
   const audio = engine?.audio;
   if (!audio) return true;
   if (audio.level <= -100) return true;
@@ -60,7 +60,7 @@ const isSilent = (): boolean => {
  * shape > 1 shrinks small bins toward 0, lowering the time-domain peak,
  * which avoids clipping and feels calmer.
  */
-function magsToTimeDomainIFFT(mags: ArrayLike<number>, N: number, shape: number): Float32Array {
+const magsToTimeDomainIFFT = (mags: ArrayLike<number>, N: number, shape: number): Float32Array => {
   if (!isPow2(N)) throw new Error(`N must be a power of two, got ${N}`);
   const half = N / 2;
   const numBins = half - 1;
@@ -96,7 +96,7 @@ function magsToTimeDomainIFFT(mags: ArrayLike<number>, N: number, shape: number)
     out[i] = Number(recovered[i] ?? 0) * scale;
   }
   return out;
-}
+};
 
 /**
  * butterchurn's AudioLevels falls back to val=att=1.0 once longAvg<0.001

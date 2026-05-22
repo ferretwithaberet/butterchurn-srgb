@@ -22,17 +22,35 @@ body {
 #canvas {
   width: 320px;
   height: 200px;
-  filter: saturate(var(--saturate, 100%)) contrast(var(--contrast, 100%))
-    hue-rotate(var(--hue-shift, 0deg));
 }
 
-#canvas.rgb-mode {
+#wrapper {
   filter: saturate(var(--saturate, 100%)) contrast(var(--contrast, 100%))
-    hue-rotate(var(--hue, 0deg));
+    hue-rotate(var(--hue-shift, 0deg));
 }
 
 .rgb-mode {
   animation-name: RGBMode;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+}
+
+#wrapper.rgb-mode {
+  filter: saturate(var(--saturate, 100%)) contrast(var(--contrast, 100%))
+    hue-rotate(var(--hue, 0deg));
+}
+
+.blend-mode {
+  width: 320px;
+  height: 200px;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: var(--blend-color, #00ff00);
+}
+
+#wrapper.enable-blend-mode .blend-mode {
+  display: block;
+  mix-blend-mode: var(--blend-mode, unset);
 }
