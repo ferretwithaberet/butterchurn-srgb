@@ -89,7 +89,7 @@
   <meta property="RGBModeSpeed" label="RGB mode speed" type="number" default="5" min="1" max="10" />
 
   <meta
-    property="BlendMode"
+    property="BlendColorMode"
     label="Blend mode"
     type="list"
     values="# None,normal,multiply,screen,overlay,darken,lighten,color-dodge,color-burn,hard-light,soft-light,difference,exclusion,hue,saturation,color,luminosity,plus-darker,plus-lighter"
@@ -104,6 +104,16 @@
     min="0"
     max="360"
   />
+
+  <meta
+    property="BlendImageMode"
+    label="Image blend mode"
+    type="list"
+    values="# None,normal,multiply,screen,overlay,darken,lighten,color-dodge,color-burn,hard-light,soft-light,difference,exclusion,hue,saturation,color,luminosity,plus-darker,plus-lighter"
+    default="# None"
+  />
+
+  <meta property="BlendImage" label="Blend image URL" type="textfield" default="" />
 
   <meta
     property="HueShift"
@@ -125,7 +135,8 @@
 <body>
   <div id="wrapper">
     <canvas id="canvas" width="320" height="200"></canvas>
-    <div class="blend-mode"></div>
+    <img id="blend-image" class="blend-mode"></img>
+    <div id="blend-color" class="blend-mode"></div>
   </div>
 
   <script type="module" src="/src/main.ts"></script>

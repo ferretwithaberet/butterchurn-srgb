@@ -38,8 +38,10 @@ type SignalRGBProperties = {
   Amplify: number;
   RGBModeEnabled: SRGBBoolean;
   RGBModeSpeed: number;
-  BlendMode: BlendMode;
+  BlendColorMode: BlendMode;
   BlendColor: string;
+  BlendImageMode: BlendMode;
+  BlendImage: string;
   HueShift: number;
   Saturation: number;
   Contrast: number;

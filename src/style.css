@@ -47,10 +47,18 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+#blend-color {
   background-color: var(--blend-color, #00ff00);
 }
 
-#wrapper.enable-blend-mode .blend-mode {
+#blend-image {
+  object-fit: cover;
+}
+
+#wrapper.enable-blend-mode #blend-color,
+#wrapper.enable-image-blend-mode #blend-image[src] {
   display: block;
   mix-blend-mode: var(--blend-mode, unset);
 }

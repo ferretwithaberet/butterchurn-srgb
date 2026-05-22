@@ -29,6 +29,8 @@ let modeInterval: number | null = null;
 const audioContext = new AudioContext({ sampleRate: 22050 });
 const wrapper = document.getElementById('wrapper') as HTMLDivElement;
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const blendColor = document.getElementById('blend-color') as HTMLDivElement;
+const blendImage = document.getElementById('blend-image') as HTMLImageElement;
 
 const visualizer = butterchurn.createVisualizer(audioContext, canvas, {
   width: 320,
@@ -94,7 +96,6 @@ const handlePresetCountChange = () => {
     if (preset) loadPreset(preset);
   }
 };
-
 window.onPresetChanged = handlePresetCountChange;
 window.onPresetRangesChanged = handlePresetCountChange;
 window.onExtraPresetsChanged = handlePresetCountChange;
@@ -113,6 +114,13 @@ window.onBlendSecondsChanged = () => {
   loadPreset(lastPreset, { force: true });
 };
 
+window.onBlendImageChanged = () => {
+  const { BlendImage } = window;
+
+  if (BlendImage) blendImage.src = BlendImage;
+  else blendImage.removeAttribute('src');
+};
+
 // Load initial preset
 loadPreset(lastPreset, {
   force: true,
@@ -129,8 +137,9 @@ const renderFrame = () => {
     Contrast,
     RGBModeEnabled,
     RGBModeSpeed,
-    BlendMode,
+    BlendColorMode,
     BlendColor,
+    BlendImageMode,
   } = window;
 
   // RGB mode
@@ -138,11 +147,15 @@ const renderFrame = () => {
   wrapper.style.animationDuration = `${5.5 - (RGBModeSpeed / 10) * 5}s`;
 
   // Color blending
-  // TODO: Support blending using image mask
-  const blendModeEnabled = BlendMode !== NONE_VALUE;
-  wrapper.classList.toggle('enable-blend-mode', blendModeEnabled);
-  wrapper.style.setProperty('--blend-mode', blendModeEnabled ? BlendMode : 'unset');
-  wrapper.style.setProperty('--blend-color', BlendColor);
+  const colorBlendModeEnabled = BlendColorMode !== NONE_VALUE;
+  wrapper.classList.toggle('enable-blend-mode', colorBlendModeEnabled);
+  blendColor.style.setProperty('--blend-mode', colorBlendModeEnabled ? BlendColorMode : 'unset');
+  blendColor.style.setProperty('--blend-color', BlendColor);
+
+  // Image blending
+  const imageBlendModeEnabled = BlendImageMode !== NONE_VALUE;
+  wrapper.classList.toggle('enable-image-blend-mode', imageBlendModeEnabled);
+  blendImage.style.setProperty('--blend-mode', imageBlendModeEnabled ? BlendImageMode : 'unset');
 
   // Filters
   wrapper.style.setProperty('--hue-shift', `${HueShift}deg`);
