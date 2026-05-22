@@ -1,5 +1,7 @@
 import presetsMap from '@/presetsMap.json' with { type: 'json' };
-import presets from '@/presets';
+
+const BASE_PRESET_URL =
+  'https://raw.githubusercontent.com/jberg/butterchurn-presets/refs/heads/master/presets/converted/';
 
 export const getRandomPresetName = () => {
   const presetNames = Object.keys(presetsMap);
@@ -12,5 +14,9 @@ export const getFullPresetName = (name: string) => (presetsMap as any)[name] as 
 
 export const getPresetByName = (name: string) => {
   const fullPresetName = getFullPresetName(name);
-  return (presets as any)[fullPresetName];
+
+  const url = new URL(BASE_PRESET_URL);
+  url.pathname += `${encodeURIComponent(fullPresetName)}.json`;
+
+  return fetch(url.toString(), { cache: 'force-cache' }).then((res) => res.json());
 };

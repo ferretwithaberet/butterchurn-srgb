@@ -39,13 +39,12 @@ visualizer.audio.analyser = analyser;
 installSignalRGBSilenceGuard(visualizer);
 
 // Methods
-const loadPreset = (preset: string, force?: boolean) => {
+const loadPreset = async (preset: string, force?: boolean) => {
   if (!force && lastPreset && lastPreset === preset) return;
   lastPreset = preset;
 
   const { BlendSeconds, ShowPresetTitle } = window;
-  const presetName = preset ?? getRandomPresetName();
-  visualizer.loadPreset(getPresetByName(presetName), BlendSeconds);
+  visualizer.loadPreset(await getPresetByName(preset), BlendSeconds);
 
   const fullName = getFullPresetName(preset);
   if (parseSRGBBoolean(ShowPresetTitle)) visualizer.launchSongTitleAnim(fullName);
