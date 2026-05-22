@@ -2,25 +2,28 @@ import '@/style.css';
 
 import butterchurn from 'butterchurn';
 
-import { getRandomPresetName, getFullPresetName, getPresetByName } from '@/utils/presets';
+import {
+  getRandomPresetName,
+  getFullPresetName,
+  getPresetByName,
+  resolvePresets,
+  getNextPreset,
+} from '@/utils/presets';
 import {
   createSignalRGBAnalyser,
   installSignalRGBSilenceGuard,
   isSilent,
 } from '@/utils/createSignalRGBAnalyser';
 import { setupDev } from '@/utils/dev';
-import { parseSRGBBoolean } from './utils/srgb';
-import { NONE_VALUE } from './utils/constants';
+import { parseSRGBBoolean } from '@/utils/srgb';
+import { ALL_VALUE, NONE_VALUE } from '@/utils/constants';
 
 if (import.meta.env.DEV) setupDev();
 
-// Constants
-const RANDOM_PREST_NAME = '# Random';
-
 // Variables
-const { Preset } = window;
-let lastPreset: string = Preset !== RANDOM_PREST_NAME ? Preset : getRandomPresetName();
-let randomInterval: number | null = null;
+const presets = resolvePresets();
+let lastPreset: string = presets[0] ?? getRandomPresetName();
+let modeInterval: number | null = null;
 
 // Setup
 const audioContext = new AudioContext({ sampleRate: 22050 });
@@ -53,48 +56,56 @@ const loadPreset = async (preset: string, options: LoadPresetOptions = {}) => {
 
   const { BlendSeconds, ShowPresetTitle } = window;
   visualizer.loadPreset(await getPresetByName(preset), overrideBlendSeconds ?? BlendSeconds);
+  console.info('Preset changed:', preset);
 
   const fullName = getFullPresetName(preset);
-  if (parseSRGBBoolean(ShowPresetTitle)) visualizer.launchSongTitleAnim(fullName);
-  console.info('Preset changed:', fullName);
+  if (fullName && parseSRGBBoolean(ShowPresetTitle)) visualizer.launchSongTitleAnim(fullName);
 };
 
-const loadRandomPreset = () => loadPreset(getRandomPresetName());
-
-const setupRandomInterval = () => {
-  if (randomInterval) return;
-
-  const { RandomSeconds } = window;
-  randomInterval = setInterval(() => loadRandomPreset(), 1000 * RandomSeconds);
+const loadNextPreset = () => {
+  const preset = getNextPreset(lastPreset);
+  if (!preset) return;
+  loadPreset(preset);
 };
 
-const cleanupRandomInterval = () => {
-  if (!randomInterval) return;
-  clearInterval(randomInterval);
-  randomInterval = null;
+const setupModeInterval = () => {
+  if (modeInterval) return;
+
+  const { ModeSeconds } = window;
+  modeInterval = setInterval(() => loadNextPreset(), 1000 * ModeSeconds);
+};
+
+const cleanupModeInterval = () => {
+  if (!modeInterval) return;
+  clearInterval(modeInterval);
+  modeInterval = null;
 };
 
 // Change handlers
-window.onPresetChanged = () => {
+const handlePresetCountChange = () => {
   // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest value from window; same identifier intentional
-  const { Preset } = window;
-  const preset = Preset !== RANDOM_PREST_NAME ? Preset : null;
+  const presets = resolvePresets();
 
-  if (!preset) {
-    setupRandomInterval();
+  if (presets.length >= 2) {
+    setupModeInterval();
   } else {
-    cleanupRandomInterval();
-    loadPreset(preset);
+    const preset = presets[0];
+    cleanupModeInterval();
+    if (preset) loadPreset(preset);
   }
 };
 
-window.onRandomSecondsChanged = () => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest value from window; same identifier intentional
-  const { Preset } = window;
-  if (Preset !== RANDOM_PREST_NAME) return;
+window.onPresetChanged = handlePresetCountChange;
+window.onPresetRangesChanged = handlePresetCountChange;
+window.onExtraPresetsChanged = handlePresetCountChange;
 
-  cleanupRandomInterval();
-  setupRandomInterval();
+window.onModeSecondsChanged = () => {
+  // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest value from window; same identifier intentional
+  const presets = resolvePresets();
+  if (presets.length < 2) return;
+
+  cleanupModeInterval();
+  setupModeInterval();
 };
 
 window.onBlendSecondsChanged = () => {
@@ -111,7 +122,6 @@ loadPreset(lastPreset, {
 // Update loop
 const renderFrame = () => {
   const {
-    // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest values from window each frame; same identifiers intentional
     Preset,
     PauseMode,
     HueShift,
@@ -145,7 +155,7 @@ const renderFrame = () => {
     visualizer.render();
   } catch (error) {
     console.error(error);
-    if (Preset === RANDOM_PREST_NAME) loadRandomPreset();
+    if (Preset === ALL_VALUE) loadNextPreset();
   }
 };
 

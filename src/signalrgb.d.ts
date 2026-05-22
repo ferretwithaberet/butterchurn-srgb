@@ -1,5 +1,7 @@
 type NoneValue = '# None';
 
+type Mode = 'Cycle' | 'Random';
+
 type SRGBBoolean = '0' | '1';
 
 type PauseMode = NoneValue | 'Pause canvas';
@@ -27,7 +29,10 @@ type BlendMode =
 
 type SignalRGBProperties = {
   Preset: string;
-  RandomSeconds: number;
+  PresetRanges: string;
+  ExtraPresets: string;
+  Mode: Mode;
+  ModeSeconds: number;
   BlendSeconds: number;
   PauseMode: PauseMode;
   Amplify: number;

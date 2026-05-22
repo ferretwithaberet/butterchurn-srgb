@@ -3,10 +3,10 @@ const generateRandomInt = (start: number, end: number) =>
 
 function parseSRGBValue(value: string, type: 'number' | 'hue'): number;
 function parseSRGBValue(value: string, type: 'boolean'): boolean;
-function parseSRGBValue(value: string, type: 'color' | 'text' | 'list'): string;
+function parseSRGBValue(value: string, type: 'color' | 'textfield' | 'list'): string;
 function parseSRGBValue(value: string, type: string): number | boolean | string | null;
 function parseSRGBValue(value: string, type: string) {
-  if (!['number', 'hue', 'boolean', 'color', 'text', 'list'].includes(type)) return null;
+  if (!['number', 'hue', 'boolean', 'color', 'textfield', 'list'].includes(type)) return null;
 
   if (['number', 'hue'].includes(type)) return Number(value);
   if (type === 'boolean') return Boolean(Number(value));
@@ -22,7 +22,7 @@ const setupProperties = (overrideValues?: Partial<SignalRGBProperties>) => {
     const type = metaTag.getAttribute('type');
     const defaultValue = metaTag.getAttribute('default');
 
-    if (!(name && type && defaultValue)) return;
+    if (!(name && type && defaultValue != null)) return;
 
     const parsedValue = parseSRGBValue(defaultValue, type);
     if (parsedValue === null) return;
