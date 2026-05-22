@@ -10,6 +10,7 @@ import {
 } from '@/utils/createSignalRGBAnalyser';
 import { setupDev } from '@/utils/dev';
 import { parseSRGBBoolean } from './utils/srgb';
+import { NONE_VALUE } from './utils/constants';
 
 if (import.meta.env.DEV) setupDev();
 
@@ -128,7 +129,7 @@ const renderFrame = () => {
 
   // Color blending
   // TODO: Support blending using image mask
-  const blendModeEnabled = BlendMode !== 'None';
+  const blendModeEnabled = BlendMode !== NONE_VALUE;
   wrapper.classList.toggle('enable-blend-mode', blendModeEnabled);
   wrapper.style.setProperty('--blend-mode', blendModeEnabled ? BlendMode : 'unset');
   wrapper.style.setProperty('--blend-color', BlendColor);

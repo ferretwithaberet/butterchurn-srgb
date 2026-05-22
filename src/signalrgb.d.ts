@@ -1,9 +1,11 @@
+type NoneValue = '# None';
+
 type SRGBBoolean = '0' | '1';
 
-type PauseMode = 'None' | 'Pause canvas';
+type PauseMode = NoneValue | 'Pause canvas';
 
 type BlendMode =
-  | 'None'
+  | NoneValue
   | 'normal'
   | 'multiply'
   | 'screen'
