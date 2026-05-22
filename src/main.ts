@@ -38,13 +38,20 @@ const analyser = createSignalRGBAnalyser(audioContext);
 visualizer.audio.analyser = analyser;
 installSignalRGBSilenceGuard(visualizer);
 
+type LoadPresetOptions = {
+  force?: boolean;
+  overrideBlendSeconds?: number;
+};
+
 // Methods
-const loadPreset = async (preset: string, force?: boolean) => {
+const loadPreset = async (preset: string, options: LoadPresetOptions = {}) => {
+  const { force, overrideBlendSeconds } = options;
+
   if (!force && lastPreset && lastPreset === preset) return;
   lastPreset = preset;
 
   const { BlendSeconds, ShowPresetTitle } = window;
-  visualizer.loadPreset(await getPresetByName(preset), BlendSeconds);
+  visualizer.loadPreset(await getPresetByName(preset), overrideBlendSeconds ?? BlendSeconds);
 
   const fullName = getFullPresetName(preset);
   if (parseSRGBBoolean(ShowPresetTitle)) visualizer.launchSongTitleAnim(fullName);
@@ -91,11 +98,14 @@ window.onRandomSecondsChanged = () => {
 
 window.onBlendSecondsChanged = () => {
   if (!lastPreset) return;
-  loadPreset(lastPreset, true);
+  loadPreset(lastPreset, { force: true });
 };
 
 // Load initial preset
-loadPreset(lastPreset);
+loadPreset(lastPreset, {
+  force: true,
+  overrideBlendSeconds: 0,
+});
 
 // Update loop
 const renderFrame = () => {
