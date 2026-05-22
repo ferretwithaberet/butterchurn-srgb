@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm generate-names && tsc && vite build",
+    "build": "pnpm generate:presets && tsc && vite build",
     "preview": "vite preview",
-    "generate-names": "node --experimental-strip-types tools/generate-names.mts",
+    "generate:presets": "node --experimental-strip-types tools/generatePresets.mts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --check .",
