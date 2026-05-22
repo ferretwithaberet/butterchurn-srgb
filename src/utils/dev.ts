@@ -69,3 +69,18 @@ export const setupDev = (options: SetupDevOptions = {}) => {
     setInterval(() => mockAudioEngine(true), 500);
   }
 };
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- interface required for declaration merging with lib.dom Window
+  interface Window {
+    setProperty: (name: string, value: any) => void;
+  }
+}
+
+if (import.meta.env.DEV) {
+  window.setProperty = (name: string, value: any) => {
+    (window as any)[name] = value;
+    const onChanged = (window as any)[`on${name}Changed`];
+    onChanged?.();
+  };
+}

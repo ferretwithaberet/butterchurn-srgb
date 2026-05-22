@@ -114,11 +114,59 @@ window.onBlendSecondsChanged = () => {
   loadPreset(lastPreset, { force: true });
 };
 
+// RGB Mode
+window.onRGBModeEnabledChanged = () => {
+  const { RGBModeEnabled } = window;
+  wrapper.classList.toggle('rgb-mode', parseSRGBBoolean(RGBModeEnabled));
+};
+
+window.onRGBModeSpeedChanged = () => {
+  const { RGBModeSpeed } = window;
+  wrapper.style.animationDuration = `${5.5 - (RGBModeSpeed / 10) * 5}s`;
+};
+
+// Color blend
+window.onBlendColorModeChanged = () => {
+  const { BlendColorMode } = window;
+  const colorBlendModeEnabled = BlendColorMode !== NONE_VALUE;
+  wrapper.classList.toggle('enable-blend-mode', colorBlendModeEnabled);
+  blendColor.style.setProperty('--blend-mode', colorBlendModeEnabled ? BlendColorMode : 'unset');
+};
+
+window.onBlendColorChanged = () => {
+  const { BlendColor } = window;
+  blendColor.style.setProperty('--blend-color', BlendColor);
+};
+
+// Image blending
+window.onBlendImageModeChanged = () => {
+  const { BlendImageMode } = window;
+  const imageBlendModeEnabled = BlendImageMode !== NONE_VALUE;
+  wrapper.classList.toggle('enable-image-blend-mode', imageBlendModeEnabled);
+  blendImage.style.setProperty('--blend-mode', imageBlendModeEnabled ? BlendImageMode : 'unset');
+};
+
 window.onBlendImageChanged = () => {
   const { BlendImage } = window;
 
   if (BlendImage) blendImage.src = BlendImage;
   else blendImage.removeAttribute('src');
+};
+
+// Filters
+window.onHueShiftChanged = () => {
+  const { HueShift } = window;
+  wrapper.style.setProperty('--hue-shift', `${HueShift}deg`);
+};
+
+window.onSaturationChanged = () => {
+  const { Saturation } = window;
+  wrapper.style.setProperty('--saturate', `${Saturation + 100}%`);
+};
+
+window.onContrastChanged = () => {
+  const { Contrast } = window;
+  wrapper.style.setProperty('--contrast', `${Contrast + 100}%`);
 };
 
 // Load initial preset
@@ -129,38 +177,7 @@ loadPreset(lastPreset, {
 
 // Update loop
 const renderFrame = () => {
-  const {
-    Preset,
-    PauseMode,
-    HueShift,
-    Saturation,
-    Contrast,
-    RGBModeEnabled,
-    RGBModeSpeed,
-    BlendColorMode,
-    BlendColor,
-    BlendImageMode,
-  } = window;
-
-  // RGB mode
-  wrapper.classList.toggle('rgb-mode', parseSRGBBoolean(RGBModeEnabled));
-  wrapper.style.animationDuration = `${5.5 - (RGBModeSpeed / 10) * 5}s`;
-
-  // Color blending
-  const colorBlendModeEnabled = BlendColorMode !== NONE_VALUE;
-  wrapper.classList.toggle('enable-blend-mode', colorBlendModeEnabled);
-  blendColor.style.setProperty('--blend-mode', colorBlendModeEnabled ? BlendColorMode : 'unset');
-  blendColor.style.setProperty('--blend-color', BlendColor);
-
-  // Image blending
-  const imageBlendModeEnabled = BlendImageMode !== NONE_VALUE;
-  wrapper.classList.toggle('enable-image-blend-mode', imageBlendModeEnabled);
-  blendImage.style.setProperty('--blend-mode', imageBlendModeEnabled ? BlendImageMode : 'unset');
-
-  // Filters
-  wrapper.style.setProperty('--hue-shift', `${HueShift}deg`);
-  wrapper.style.setProperty('--saturate', `${Saturation + 100}%`);
-  wrapper.style.setProperty('--contrast', `${Contrast + 100}%`);
+  const { Preset, PauseMode } = window;
 
   if (isSilent() && PauseMode === 'Pause canvas') return;
 
