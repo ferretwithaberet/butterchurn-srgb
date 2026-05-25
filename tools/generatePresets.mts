@@ -3,11 +3,10 @@ import fs from 'fs';
 const allPresetFiles = await fs.promises.readdir(
   './node_modules/butterchurn-presets/presets/converted',
 );
-const allPresets = allPresetFiles.map((preset) => preset.replace(/.json$/, ''));
-const presets = allPresets.filter((preset) => !preset.includes('#'));
+const presets = allPresetFiles.map((preset) => preset.replace(/.json$/, ''));
 
 const sanitizeSRGBOption = (str: string) =>
-  str.replace(/,/g, '٬').replace(/&/g, '＆').replace(/\$/g, '＄').replace(/\s+/g, ' ').trim();
+  str.replace(/,/g, ' + ').replace(/&/g, 'and').replace(/\$/g, 'S').replace(/\s+/g, ' ').trim();
 
 const DIGITS_COUNT = presets.length.toString().length;
 const cleanedPresets = presets.reduce<Record<string, string>>((acc, preset, index) => {
