@@ -33,6 +33,16 @@ export default [
       'no-continue': 'off',
       'no-void': 'off',
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
       '@limegrass/import-alias/import-alias': [
         'error',
         {
