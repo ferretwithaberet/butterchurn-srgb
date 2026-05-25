@@ -1,5 +1,4 @@
 import {
-  renderSRGBField,
   getMetaTags,
   parseSRGBValue,
   renderElement,
@@ -8,6 +7,85 @@ import {
 } from '@/dev/utils';
 
 const PERSIST_PROPERTIES_KEY = '_srgb_properties';
+
+export const setSRGBProperty = (name: string, value: any) => {
+  (window as any)[name] = value;
+  const onChanged = (window as any)[`on${name}Changed`];
+  onChanged?.();
+};
+
+export const renderSRGBField = (metaTag: HTMLMetaElement) => {
+  const name = metaTag.getAttribute('property');
+  const label = metaTag.getAttribute('label');
+  const type = metaTag.getAttribute('type');
+
+  if (!(name && type)) return null;
+
+  let fieldEl: Element;
+  const fieldValue = (window as any)[name];
+  switch (type) {
+    case 'number':
+    case 'hue': {
+      const min = metaTag.getAttribute('min');
+      const max = metaTag.getAttribute('max');
+
+      fieldEl = renderElement(
+        `<input name="${name}" type="range" placeholder=${label ?? name} value="${fieldValue}" min="${min}" max="${max}" />`,
+      );
+      break;
+    }
+
+    case 'boolean': {
+      fieldEl = renderElement(
+        `<input name="${name}" type="checkbox" placeholder=${label ?? name} value="${fieldValue}" />`,
+      );
+      break;
+    }
+
+    case 'list': {
+      const options = (metaTag.getAttribute('values') ?? '').split(',');
+      fieldEl = renderElement(`<select name="${name}" placeholder=${label ?? name}">
+        ${options.map((option) => `<option value="${option}"${option === fieldValue ? ' selected' : ''}>${option}</option>`).join('/n')}
+      </select>`);
+      break;
+    }
+
+    default: {
+      fieldEl = renderElement(
+        `<input name="${name}" type="${type}" placeholder=${label ?? name} value="${fieldValue}" />`,
+      );
+    }
+  }
+
+  fieldEl.addEventListener('change', (event) => {
+    const target = event.target as HTMLInputElement;
+    let value: any;
+    switch (type) {
+      case 'number':
+      case 'hue': {
+        value = Number(target.value);
+        break;
+      }
+
+      case 'boolean': {
+        value = Number(target.checked).toString();
+        break;
+      }
+
+      default:
+        value = target.value;
+    }
+    setSRGBProperty(target.name, value);
+    console.info(`Value change for "${target.name}": ${value}`);
+  });
+
+  const fieldWrapper = renderElement(`<div class="field">
+    <label for=${name}>${label ?? name}</label>
+  </div`);
+  fieldWrapper.appendChild(fieldEl);
+
+  return fieldWrapper;
+};
 
 const createForm = (parent: HTMLElement = document.body) => {
   const metaTags = getMetaTags();
@@ -32,6 +110,7 @@ const createForm = (parent: HTMLElement = document.body) => {
       if (!name) return;
       const field = document.getElementsByName(name)[0] as HTMLInputElement;
       field.value = defaultValue ?? '';
+      setSRGBProperty(name, defaultValue ?? '');
     });
 
     const event = new CustomEvent('change');

@@ -1,29 +1,25 @@
-import mockAudioEngine from '@/dev/audio';
+import mockAudioEngine, { type AudioMockType } from '@/dev/audio';
 import createControls from '@/dev/controls';
 import setupProperties, { type SetupPropertiesOptions } from '@/dev/properties';
 import { replaceOrCreateElement } from '@/dev/utils';
 
 export type SetupDevOptions = {
-  randomAudioData?: boolean;
+  audioMockType?: AudioMockType;
   properties?: SetupPropertiesOptions;
 };
 
 const setupDev = (options: SetupDevOptions = {}) => {
   import('@/dev/dev.css');
 
-  const { randomAudioData, properties } = options;
+  const { audioMockType = 'random', properties } = options;
 
   const devtoolsContainer = document.createElement('div');
   devtoolsContainer.id = 'devtools';
   replaceOrCreateElement(document.body, devtoolsContainer);
 
-  setupProperties({ ...properties, formParent: devtoolsContainer });
   createControls(devtoolsContainer);
-  mockAudioEngine(randomAudioData);
-
-  if (randomAudioData) {
-    setInterval(() => mockAudioEngine(true), 500);
-  }
+  setupProperties({ ...properties, formParent: devtoolsContainer });
+  mockAudioEngine(audioMockType);
 };
 
 export default setupDev;
