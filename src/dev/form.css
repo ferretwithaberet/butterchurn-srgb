@@ -10,11 +10,12 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
 }
 
 #property-form .field label {
   font-weight: bold;
-  color: aqua;
+  color: lightsteelblue;
 }
 
 #property-form .field input[type='checkbox'] {
