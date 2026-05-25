@@ -27,3 +27,4 @@ dist-ssr
 
 # Project
 src/presetsMap.json
+src/dev/options.ts

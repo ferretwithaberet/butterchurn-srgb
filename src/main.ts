@@ -1,5 +1,5 @@
+import setupDev from '@/dev';
 import '@/style.css';
-import setupDev from '@/utils/dev';
 import { ALL_VALUE, NONE_VALUE } from '@/utils/constants';
 import {
   createSignalRGBAnalyser,
