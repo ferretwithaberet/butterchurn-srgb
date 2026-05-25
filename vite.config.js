@@ -1,6 +1,6 @@
+import inline from '@zhoumutou/vite-plugin-inline';
 import path from 'path';
 import { defineConfig } from 'vite';
-import inline from '@zhoumutou/vite-plugin-inline';
 
 const ENTRY_HTML = 'butterchurn-srgb.html';
 

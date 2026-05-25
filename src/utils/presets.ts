@@ -1,6 +1,6 @@
 import presetsMap from '@/presetsMap.json' with { type: 'json' };
-import { ALL_VALUE, NONE_VALUE, RANGES_VALUE } from '@/utils/constants';
 import { RANGES_REGEX, resolveRanges } from '@/utils/array';
+import { ALL_VALUE, NONE_VALUE, RANGES_VALUE } from '@/utils/constants';
 
 const ALL_PRESETS = Object.keys(presetsMap);
 const BASE_PRESET_URL =

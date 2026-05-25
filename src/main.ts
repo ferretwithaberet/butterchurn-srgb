@@ -1,16 +1,14 @@
 import '@/style.css';
-
-import butterchurn from 'butterchurn';
-
-import { getFullPresetName, getPresetByName, resolvePresets, getNextPreset } from '@/utils/presets';
+import setupDev from '@/utils/dev';
+import { ALL_VALUE, NONE_VALUE } from '@/utils/constants';
 import {
   createSignalRGBAnalyser,
   installSignalRGBSilenceGuard,
   isSilent,
 } from '@/utils/createSignalRGBAnalyser';
-import { setupDev } from '@/utils/dev';
+import { getFullPresetName, getPresetByName, resolvePresets, getNextPreset } from '@/utils/presets';
 import { parseSRGBBoolean } from '@/utils/srgb';
-import { ALL_VALUE, NONE_VALUE } from '@/utils/constants';
+import butterchurn from 'butterchurn';
 
 if (import.meta.env.DEV) setupDev();
 
