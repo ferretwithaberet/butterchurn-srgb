@@ -1,0 +1,78 @@
+:root {
+  --primary-color: cornflowerblue;
+}
+
+#devtools {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin: 2rem 0.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#devtools button::-moz-focus-inner,
+#devtools input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+#devtools .title {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+#devtools button {
+  min-width: 300px;
+  background-color: var(--primary-color);
+  color: white;
+  outline: none;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 5px 10px;
+  transition: opacity 0.3s;
+  font-weight: bold;
+}
+
+#devtools button:hover {
+  opacity: 80%;
+}
+
+#devtools button:active {
+  opacity: 50%;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+#properties-form .field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+#properties-form .field label {
+  font-weight: bold;
+  color: lightsteelblue;
+}
+
+#properties-form .field input[type='checkbox'] {
+  align-self: flex-start;
+}
+
+@media (width >= 48rem) {
+  .section {
+    flex-direction: row;
+  }
+
+  #properties-form .field {
+    width: calc(100% / 3 - 2rem);
+  }
+}

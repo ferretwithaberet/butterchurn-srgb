@@ -1,6 +1,6 @@
 import { generateRandomInt } from '@/dev/utils';
 
-export const mockAudioEngine = (random = false) => {
+const mockAudioEngine = (random = false) => {
   const level = random ? -generateRandomInt(0, 101) : -100;
   (window as any).engine = {
     audio: {
@@ -11,3 +11,5 @@ export const mockAudioEngine = (random = false) => {
     },
   };
 };
+
+export default mockAudioEngine;

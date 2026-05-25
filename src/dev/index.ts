@@ -1,40 +1,25 @@
-import { mockAudioEngine } from '@/dev/audio';
+import mockAudioEngine from '@/dev/audio';
 import createControls from '@/dev/controls';
-import createForm from '@/dev/form';
-import options from '@/dev/options';
-import { getMetaTags, parseSRGBValue } from '@/dev/utils';
+import setupProperties, { type SetupPropertiesOptions } from '@/dev/properties';
+import { replaceOrCreateElement } from '@/dev/utils';
 
-const setupProperties = (overrideValues?: Partial<SignalRGBProperties>) => {
-  getMetaTags().forEach((metaTag) => {
-    const name = metaTag.getAttribute('property');
-    const type = metaTag.getAttribute('type');
-    const defaultValue = metaTag.getAttribute('default');
-
-    if (!(name && type && defaultValue != null)) return;
-
-    const parsedValue = parseSRGBValue(defaultValue, type);
-    if (parsedValue === null) return;
-
-    (window as any)[name] = (overrideValues as any)?.[name] ?? parsedValue;
-  });
+export type SetupDevOptions = {
+  randomAudioData?: boolean;
+  properties?: SetupPropertiesOptions;
 };
 
-const triggerChangeListeners = () => {
-  getMetaTags().forEach((metaTag) => {
-    const name = metaTag.getAttribute('property');
-    const onChanged = (window as any)[`on${name}Changed`];
-    onChanged?.();
-  });
-};
+const setupDev = (options: SetupDevOptions = {}) => {
+  import('@/dev/dev.css');
 
-const setupDev = () => {
-  const { randomAudioData = true, overridePropertyValues } = options;
+  const { randomAudioData, properties } = options;
 
-  setupProperties(overridePropertyValues);
-  queueMicrotask(triggerChangeListeners);
+  const devtoolsContainer = document.createElement('div');
+  devtoolsContainer.id = 'devtools';
+  replaceOrCreateElement(document.body, devtoolsContainer);
+
+  setupProperties({ ...properties, formParent: devtoolsContainer });
+  createControls(devtoolsContainer);
   mockAudioEngine(randomAudioData);
-  createForm();
-  createControls();
 
   if (randomAudioData) {
     setInterval(() => mockAudioEngine(true), 500);

@@ -10,7 +10,7 @@ import { getFullPresetName, getPresetByName, resolvePresets, getNextPreset } fro
 import { parseSRGBBoolean } from '@/utils/srgb';
 import butterchurn from 'butterchurn';
 
-if (import.meta.env.DEV) setupDev();
+if (import.meta.env.DEV) setupDev({ properties: { persist: true } });
 
 // Variables
 let lastPreset: string = getNextPreset(null);
