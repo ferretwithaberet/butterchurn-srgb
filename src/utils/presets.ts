@@ -10,12 +10,10 @@ export const resolvePresets = () => {
   const { Preset, PresetRanges, ExtraPresets } = window;
 
   let presets: string[] = [...ALL_PRESETS];
-  if (Preset !== NONE_VALUE) {
-    if (Preset === ALL_VALUE) void 0;
-    else if (Preset === RANGES_VALUE && RANGES_REGEX.test(PresetRanges))
-      presets = resolveRanges(ALL_PRESETS, PresetRanges);
-    else if (!Preset.startsWith('#')) presets = [Preset];
-  }
+  if (Preset === NONE_VALUE) presets = [];
+  else if (Preset === RANGES_VALUE && RANGES_REGEX.test(PresetRanges))
+    presets = resolveRanges(ALL_PRESETS, PresetRanges);
+  else if (Preset !== ALL_VALUE && !Preset.startsWith('#')) presets = [Preset];
 
   const extraPresets = ExtraPresets.split('||')
     .filter(Boolean)
@@ -42,6 +40,7 @@ export const getPresetByName = (name: string) => {
 export const getNextPreset = (lastPreset: string | null) => {
   const { Mode } = window;
   const presets = resolvePresets();
+  if (presets.length === 0) return undefined;
 
   if (Mode === 'Cycle') {
     const lastIndex = lastPreset ? presets.indexOf(lastPreset) : -1;

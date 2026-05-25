@@ -1,6 +1,6 @@
 import setupDev from '@/dev';
 import '@/style.css';
-import { ALL_VALUE, NONE_VALUE } from '@/utils/constants';
+import { NONE_VALUE } from '@/utils/constants';
 import {
   createSignalRGBAnalyser,
   installSignalRGBSilenceGuard,
@@ -13,7 +13,7 @@ import butterchurn from 'butterchurn';
 if (import.meta.env.DEV) setupDev({ properties: { persist: true } });
 
 // Variables
-let lastPreset: string = getNextPreset(null);
+let lastPreset = getNextPreset(null);
 let modeInterval: number | null = null;
 
 // Setup
@@ -43,12 +43,13 @@ type LoadPresetOptions = {
 // Methods
 const loadPreset = async (preset: string, options: LoadPresetOptions = {}) => {
   const { force, overrideBlendSeconds } = options;
-
-  if (!force && lastPreset && lastPreset === preset) return;
-  lastPreset = preset;
+  if (!force && lastPreset === preset) return;
 
   const { BlendSeconds, ShowPresetTitle } = window;
-  visualizer.loadPreset(await getPresetByName(preset), overrideBlendSeconds ?? BlendSeconds);
+  const data = await getPresetByName(preset);
+
+  lastPreset = preset;
+  visualizer.loadPreset(data, overrideBlendSeconds ?? BlendSeconds);
   console.info('Preset changed:', preset);
 
   const fullName = getFullPresetName(preset);
@@ -56,7 +57,7 @@ const loadPreset = async (preset: string, options: LoadPresetOptions = {}) => {
 };
 
 const loadNextPreset = () => {
-  const preset = getNextPreset(lastPreset);
+  const preset = getNextPreset(lastPreset ?? null);
   if (!preset) return;
   loadPreset(preset);
 };
@@ -162,14 +163,11 @@ window.onContrastChanged = () => {
 window.addEventListener('nextpreset', loadNextPreset);
 
 // Load initial preset
-loadPreset(lastPreset, {
-  force: true,
-  overrideBlendSeconds: 0,
-});
+if (lastPreset) loadPreset(lastPreset, { force: true, overrideBlendSeconds: 0 });
 
 // Update loop
 const renderFrame = () => {
-  const { Preset, PauseMode } = window;
+  const { PauseMode } = window;
 
   if (isSilent() && PauseMode === 'Pause canvas') return;
 
@@ -177,7 +175,8 @@ const renderFrame = () => {
     visualizer.render();
   } catch (error) {
     console.error(error);
-    if (Preset === ALL_VALUE) loadNextPreset();
+    const presets = resolvePresets();
+    if (presets.length >= 2) loadNextPreset();
   }
 };
 

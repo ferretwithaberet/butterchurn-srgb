@@ -5,6 +5,7 @@ import {
   replaceOrCreateElement,
   getParsedPersistedValue,
 } from '@/dev/utils';
+import { parseSRGBBoolean } from '@/utils/srgb';
 
 const PERSIST_PROPERTIES_KEY = '_srgb_properties';
 
@@ -30,29 +31,30 @@ export const renderSRGBField = (metaTag: HTMLMetaElement) => {
       const max = metaTag.getAttribute('max');
 
       fieldEl = renderElement(
-        `<input name="${name}" type="range" placeholder=${label ?? name} value="${fieldValue}" min="${min}" max="${max}" />`,
+        `<input id="${name}" name="${name}" type="range" placeholder="${label ?? name}" value="${fieldValue}" min="${min}" max="${max}" />`,
       );
       break;
     }
 
     case 'boolean': {
+      const checked = parseSRGBBoolean(fieldValue);
       fieldEl = renderElement(
-        `<input name="${name}" type="checkbox" placeholder=${label ?? name} value="${fieldValue}" />`,
+        `<input id="${name}" name="${name}" type="checkbox"${checked ? ' checked' : ''} />`,
       );
       break;
     }
 
     case 'list': {
       const options = (metaTag.getAttribute('values') ?? '').split(',');
-      fieldEl = renderElement(`<select name="${name}" placeholder=${label ?? name}">
-        ${options.map((option) => `<option value="${option}"${option === fieldValue ? ' selected' : ''}>${option}</option>`).join('/n')}
+      fieldEl = renderElement(`<select id="${name}" name="${name}" placeholder="${label ?? name}">
+        ${options.map((option) => `<option value="${option}"${option === fieldValue ? ' selected' : ''}>${option}</option>`).join('\n')}
       </select>`);
       break;
     }
 
     default: {
       fieldEl = renderElement(
-        `<input name="${name}" type="${type}" placeholder=${label ?? name} value="${fieldValue}" />`,
+        `<input id="${name}" name="${name}" type="${type}" placeholder="${label ?? name}" value="${fieldValue}" />`,
       );
     }
   }
@@ -80,8 +82,8 @@ export const renderSRGBField = (metaTag: HTMLMetaElement) => {
   });
 
   const fieldWrapper = renderElement(`<div class="field">
-    <label for=${name}>${label ?? name}</label>
-  </div`);
+    <label for="${name}">${label ?? name}</label>
+  </div>`);
   fieldWrapper.appendChild(fieldEl);
 
   return fieldWrapper;
@@ -106,15 +108,27 @@ const createForm = (parent: HTMLElement = document.body) => {
   resetButton.addEventListener('click', () => {
     metaTags.forEach((metaTag) => {
       const name = metaTag.getAttribute('property');
+      const type = metaTag.getAttribute('type');
       const defaultValue = metaTag.getAttribute('default');
-      if (!name) return;
-      const field = document.getElementsByName(name)[0] as HTMLInputElement;
-      field.value = defaultValue ?? '';
-      setSRGBProperty(name, defaultValue ?? '');
+      if (!name || !type || defaultValue == null) return;
+
+      const parsedDefault = parseSRGBValue(defaultValue, type);
+      if (parsedDefault === null) return;
+
+      const field = document.getElementsByName(name)[0] as HTMLInputElement | undefined;
+      if (field) {
+        if (type === 'boolean') field.checked = parseSRGBBoolean(parsedDefault as any);
+        else field.value = String(parsedDefault);
+
+        if (type === 'list') {
+          const choices = (field as any).choicesInstance;
+          choices?.setChoiceByValue(String(parsedDefault));
+        }
+      }
+      setSRGBProperty(name, parsedDefault);
     });
 
-    const event = new CustomEvent('change');
-    form.dispatchEvent(event);
+    form.dispatchEvent(new CustomEvent('change'));
   });
   form.appendChild(resetButton);
 
@@ -143,17 +157,20 @@ const setupProperties = (options: SetupPropertiesOptions = {}) => {
     const parsedValue = parseSRGBValue(defaultValue, type);
     if (parsedValue === null) return;
 
-    (window as any)[name] =
-      persist && persistedValues ? (persistedValues as any)[name] : parsedValue;
+    const persisted = persist ? (persistedValues as any)?.[name] : undefined;
+    (window as any)[name] = persisted !== undefined ? persisted : parsedValue;
   });
 
   const form = createForm(formParent);
   if (persist)
     form.addEventListener('change', () => {
-      localStorage.setItem(
-        PERSIST_PROPERTIES_KEY,
-        JSON.stringify(Object.fromEntries(new FormData(form))),
-      );
+      const snapshot: Record<string, unknown> = {};
+      metaTags.forEach((metaTag) => {
+        const propName = metaTag.getAttribute('property');
+        if (!propName) return;
+        snapshot[propName] = (window as any)[propName];
+      });
+      localStorage.setItem(PERSIST_PROPERTIES_KEY, JSON.stringify(snapshot));
     });
 
   queueMicrotask(() => {
