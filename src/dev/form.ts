@@ -75,7 +75,7 @@ const renderField = (metaTag: HTMLMetaElement) => {
 };
 
 const FORM_ID = 'property-form';
-export const createForm = () => {
+const createForm = () => {
   import('@/dev/form.css');
 
   const form = document.createElement('form');
@@ -95,3 +95,5 @@ export const createForm = () => {
 
   document.body.appendChild(form);
 };
+
+export default createForm;

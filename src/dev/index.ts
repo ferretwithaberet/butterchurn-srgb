@@ -1,5 +1,6 @@
 import { mockAudioEngine } from '@/dev/audio';
-import { createForm } from '@/dev/form';
+import createControls from '@/dev/controls';
+import createForm from '@/dev/form';
 import options from '@/dev/options';
 import { getMetaTags, parseSRGBValue } from '@/dev/utils';
 
@@ -33,6 +34,7 @@ const setupDev = () => {
   queueMicrotask(triggerChangeListeners);
   mockAudioEngine(randomAudioData);
   createForm();
+  createControls();
 
   if (randomAudioData) {
     setInterval(() => mockAudioEngine(true), 500);

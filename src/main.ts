@@ -158,6 +158,9 @@ window.onContrastChanged = () => {
   wrapper.style.setProperty('--contrast', `${Contrast + 100}%`);
 };
 
+// Window events API
+window.addEventListener('nextpreset', loadNextPreset);
+
 // Load initial preset
 loadPreset(lastPreset, {
   force: true,
