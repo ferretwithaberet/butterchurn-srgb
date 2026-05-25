@@ -1,3 +1,5 @@
+export const RANGES_REGEX = /^\s*\d+(\s*-\s*\d+)?\s*(,\s*\d+(\s*-\s*\d+)?\s*)*$/;
+
 export const parseRanges = (value: string) =>
   value
     .split(',')
@@ -10,7 +12,7 @@ export const resolveRanges = <T>(arr: T[], ranges: string, firstIsOne = true) =>
   let result: T[] = [];
   parsedRanges.forEach((range) => {
     if (typeof range === 'number') {
-      result = [...result, arr[range]];
+      result = [...result, arr[firstIsOne ? range - 1 : range]];
       return;
     }
 

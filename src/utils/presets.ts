@@ -1,6 +1,6 @@
 import presetsMap from '@/presetsMap.json' with { type: 'json' };
 import { ALL_VALUE, NONE_VALUE, RANGES_VALUE } from '@/utils/constants';
-import { resolveRanges } from '@/utils/array';
+import { RANGES_REGEX, resolveRanges } from '@/utils/array';
 
 const ALL_PRESETS = Object.keys(presetsMap);
 const BASE_PRESET_URL =
@@ -9,24 +9,18 @@ const BASE_PRESET_URL =
 export const resolvePresets = () => {
   const { Preset, PresetRanges, ExtraPresets } = window;
 
-  let presets: string[] = [];
+  let presets: string[] = [...ALL_PRESETS];
   if (Preset !== NONE_VALUE) {
-    if (Preset === ALL_VALUE) presets = [...presets, ...ALL_PRESETS];
-    else if (Preset === RANGES_VALUE)
-      presets = [...presets, ...resolveRanges(ALL_PRESETS, PresetRanges)];
-    else presets = [...presets, Preset];
+    if (Preset === ALL_VALUE) void 0;
+    else if (Preset === RANGES_VALUE && RANGES_REGEX.test(PresetRanges))
+      presets = resolveRanges(ALL_PRESETS, PresetRanges);
+    else if (!Preset.startsWith('#')) presets = [Preset];
   }
 
   const extraPresets = ExtraPresets.split('||')
     .filter(Boolean)
     .map((extraPreset) => extraPreset.trim());
   return [...presets, ...extraPresets];
-};
-
-export const getRandomPresetName = () => {
-  const randomIndex = Math.floor(Math.random() * ALL_PRESETS.length);
-
-  return ALL_PRESETS[randomIndex];
 };
 
 export const getFullPresetName = (name: string) => (presetsMap as any)[name] as string;
@@ -45,13 +39,15 @@ export const getPresetByName = (name: string) => {
   return fetch(fetchUrl, { cache: 'force-cache' }).then((res) => res.json());
 };
 
-export const getNextPreset = (lastPreset: string) => {
+export const getNextPreset = (lastPreset: string | null) => {
   const { Mode } = window;
   const presets = resolvePresets();
 
   if (Mode === 'Cycle') {
-    const lastIndex = presets.indexOf(lastPreset);
-    return presets[(lastIndex + 1) % presets.length];
+    const lastIndex = lastPreset ? presets.indexOf(lastPreset) : -1;
+    const nextIndex = lastIndex + 1;
+    if (nextIndex >= presets.length) return presets[0];
+    return presets[nextIndex];
   }
 
   const randomIndex = Math.floor(Math.random() * presets.length);

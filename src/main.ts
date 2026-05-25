@@ -2,13 +2,7 @@ import '@/style.css';
 
 import butterchurn from 'butterchurn';
 
-import {
-  getRandomPresetName,
-  getFullPresetName,
-  getPresetByName,
-  resolvePresets,
-  getNextPreset,
-} from '@/utils/presets';
+import { getFullPresetName, getPresetByName, resolvePresets, getNextPreset } from '@/utils/presets';
 import {
   createSignalRGBAnalyser,
   installSignalRGBSilenceGuard,
@@ -21,8 +15,7 @@ import { ALL_VALUE, NONE_VALUE } from '@/utils/constants';
 if (import.meta.env.DEV) setupDev();
 
 // Variables
-const presets = resolvePresets();
-let lastPreset: string = presets[0] ?? getRandomPresetName();
+let lastPreset: string = getNextPreset(null);
 let modeInterval: number | null = null;
 
 // Setup
@@ -85,7 +78,6 @@ const cleanupModeInterval = () => {
 
 // Change handlers
 const handlePresetCountChange = () => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest value from window; same identifier intentional
   const presets = resolvePresets();
 
   if (presets.length >= 2) {
@@ -101,7 +93,6 @@ window.onPresetRangesChanged = handlePresetCountChange;
 window.onExtraPresetsChanged = handlePresetCountChange;
 
 window.onModeSecondsChanged = () => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow -- re-read latest value from window; same identifier intentional
   const presets = resolvePresets();
   if (presets.length < 2) return;
 
