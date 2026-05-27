@@ -28,6 +28,9 @@ export default [
     rules: {
       'import/extensions': 'off',
       'import-x/extensions': 'off',
+      // import ordering owned by @trivago/prettier-plugin-sort-imports; disable eslint sorters to avoid conflict
+      'import/order': 'off',
+      'import-x/order': 'off',
       'import-x/prefer-default-export': 'off',
       'no-console': 'off',
       'no-continue': 'off',
@@ -43,12 +46,7 @@ export default [
           destructuredArrayIgnorePattern: '^_',
         },
       ],
-      '@limegrass/import-alias/import-alias': [
-        'error',
-        {
-          aliasConfigPath: 'tsconfig.app.json',
-        },
-      ],
+      '@limegrass/import-alias/import-alias': ['error'],
     },
   },
   prettier,
