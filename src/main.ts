@@ -75,6 +75,12 @@ const cleanupModeInterval = () => {
   modeInterval = null;
 };
 
+const nextPreset = () => {
+  loadNextPreset();
+  cleanupModeInterval();
+  setupModeInterval();
+};
+
 // Change handlers
 const handlePresetCountChange = () => {
   const presets = resolvePresets();
@@ -159,12 +165,10 @@ window.onContrastChanged = () => {
   wrapper.style.setProperty('--contrast', `${Contrast + 100}%`);
 };
 
+window.onNextPresetChanged = nextPreset;
+
 // Window events API
-window.addEventListener('nextpreset', () => {
-  loadNextPreset();
-  cleanupModeInterval();
-  setupModeInterval();
-});
+window.addEventListener('nextpreset', nextPreset);
 
 // Load initial preset
 if (lastPreset) loadPreset(lastPreset, { force: true, overrideBlendSeconds: 0 });

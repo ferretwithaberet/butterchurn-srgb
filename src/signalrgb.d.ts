@@ -46,6 +46,7 @@ type SignalRGBProperties = {
   Saturation: number;
   Contrast: number;
   ShowPresetTitle: SRGBBoolean;
+  NextPreset: SRGBBoolean;
 };
 
 type SignalRGBChangeListeners = {
