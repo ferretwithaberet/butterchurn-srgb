@@ -1,10 +1,12 @@
 export const RANGES_REGEX = /^\s*\d+(\s*-\s*\d+)?\s*(,\s*\d+(\s*-\s*\d+)?\s*)*$/;
 
-export const parseRanges = (value: string) =>
-  value
+export const parseRanges = (value: string) => {
+  if (!RANGES_REGEX.test(value)) return [];
+  return value
     .split(',')
     .map((range) => range.split('-').map((part) => Number(part.trim())))
-    .map((range) => (range.length === 1 ? range[0] : range));
+    .map((range) => (range.length === 1 ? range[0] : (range as [number, number])));
+};
 
 export const resolveRanges = <T>(arr: T[], ranges: string, firstIsOne = true) => {
   const parsedRanges = parseRanges(ranges);
