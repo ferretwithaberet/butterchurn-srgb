@@ -160,7 +160,11 @@ window.onContrastChanged = () => {
 };
 
 // Window events API
-window.addEventListener('nextpreset', loadNextPreset);
+window.addEventListener('nextpreset', () => {
+  loadNextPreset();
+  cleanupModeInterval();
+  setupModeInterval();
+});
 
 // Load initial preset
 if (lastPreset) loadPreset(lastPreset, { force: true, overrideBlendSeconds: 0 });
