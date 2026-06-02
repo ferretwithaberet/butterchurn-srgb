@@ -1,4 +1,5 @@
 import { generateRandomInt } from '@/dev/utils';
+import { createRenderLoop } from '@/utils/render';
 
 export type AudioMockType = null | 'random' | 'system';
 
@@ -10,7 +11,6 @@ type EngineAudio = {
 };
 
 const FREQ_BINS = 200;
-const RANDOM_INTERVAL_MS = 500;
 const noop = () => {};
 
 const setEngineAudio = (audio: EngineAudio) => {
@@ -45,18 +45,9 @@ const once = (fn: () => void) => {
 
 const startRandomLoop = () => {
   setEngineAudio(randomAudio());
-  let last = 0;
-  let frameId = 0;
-  const tick: FrameRequestCallback = (now) => {
-    if (last === 0) last = now;
-    if (now - last >= RANDOM_INTERVAL_MS) {
-      setEngineAudio(randomAudio());
-      last = now;
-    }
-    frameId = requestAnimationFrame(tick);
-  };
-  frameId = requestAnimationFrame(tick);
-  return once(() => cancelAnimationFrame(frameId));
+  const loop = createRenderLoop(() => setEngineAudio(randomAudio()));
+  loop.start();
+  return once(() => loop.cancel());
 };
 
 const startSystemLoop = (track: MediaStreamTrack) => {
@@ -73,8 +64,7 @@ const startSystemLoop = (track: MediaStreamTrack) => {
   const audio = zeroedAudio();
   setEngineAudio(audio);
 
-  let frameId = 0;
-  const tick = () => {
+  const loop = createRenderLoop(() => {
     analyser.getByteFrequencyData(freqBytes);
     analyser.getByteTimeDomainData(timeBytes);
 
@@ -92,13 +82,11 @@ const startSystemLoop = (track: MediaStreamTrack) => {
     let sum = 0;
     for (let i = 0; i < freqBytes.length; i += 1) sum += freqBytes[i] ?? 0;
     audio.density = sum / (freqBytes.length * 255);
-
-    frameId = requestAnimationFrame(tick);
-  };
-  frameId = requestAnimationFrame(tick);
+  });
+  loop.start();
 
   return once(() => {
-    cancelAnimationFrame(frameId);
+    loop.cancel();
     source.disconnect();
     void ctx.close();
   });

@@ -7,6 +7,7 @@ import {
   isSilent,
 } from '@/utils/createSignalRGBAnalyser';
 import { getFullPresetName, getPresetByName, resolvePresets, getNextPreset } from '@/utils/presets';
+import { createRenderLoop } from '@/utils/render';
 import { parseSRGBBoolean } from '@/utils/srgb';
 import butterchurn from 'butterchurn';
 
@@ -188,8 +189,12 @@ const renderFrame = () => {
   }
 };
 
-const update = () => {
-  renderFrame();
-  window.requestAnimationFrame(update);
+let renderLoop = createRenderLoop(renderFrame);
+
+window.onMaxFPSChanged = () => {
+  renderLoop.cancel();
+  renderLoop = createRenderLoop(renderFrame);
+  renderLoop.start();
 };
-update();
+
+renderLoop.start();

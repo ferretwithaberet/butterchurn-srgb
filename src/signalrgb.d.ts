@@ -35,6 +35,7 @@ type SignalRGBProperties = {
   ModeSeconds: number;
   BlendSeconds: number;
   PauseMode: PauseMode;
+  MaxFPS: number;
   Amplify: number;
   RGBModeEnabled: SRGBBoolean;
   RGBModeSpeed: number;
